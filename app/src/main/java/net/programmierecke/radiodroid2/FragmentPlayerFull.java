@@ -132,8 +132,6 @@ public class FragmentPlayerFull extends Fragment {
     private ImageButton btnPlay;
     private ImageButton btnPrev;
     private ImageButton btnNext;
-    private ImageButton btnRecord;
-    private ImageButton btnFavourite;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -238,8 +236,6 @@ public class FragmentPlayerFull extends Fragment {
         btnPlay = view.findViewById(R.id.buttonPlay);
         btnPrev = view.findViewById(R.id.buttonPrev);
         btnNext = view.findViewById(R.id.buttonNext);
-        btnRecord = view.findViewById(R.id.buttonRecord);
-        btnFavourite = view.findViewById(R.id.buttonFavorite);
 
         historyAndRecordsPagerAdapter.recyclerViewSongHistory.setAdapter(trackHistoryAdapter);
 
@@ -323,36 +319,6 @@ public class FragmentPlayerFull extends Fragment {
 
         btnPrev.setOnClickListener(view -> PlayerServiceUtil.skipToPrevious());
         btnNext.setOnClickListener(view -> PlayerServiceUtil.skipToNext());
-
-        btnRecord.setOnClickListener(view -> {
-            if (PlayerServiceUtil.isPlaying()) {
-                if (PlayerServiceUtil.isRecording()) {
-                    PlayerServiceUtil.stopRecording();
-                } else {
-                    if (Utils.verifyStoragePermissions(FragmentPlayerFull.this, PERM_REQ_STORAGE_RECORD)) {
-                        PlayerServiceUtil.startRecording();
-                    }
-                }
-
-                updateRunningRecording();
-
-                pagerHistoryAndRecordings.setCurrentItem(1, true);
-            }
-        });
-
-        btnFavourite.setOnClickListener(v -> {
-            DataRadioStation station = Utils.getCurrentOrLastStation(requireContext());
-
-            if (station == null) {
-                return;
-            }
-
-            if (favouriteManager.has(station.StationUuid)) {
-                StationActions.removeFromFavourites(requireContext(), null, station);
-            } else {
-                StationActions.markAsFavourite(requireContext(), station);
-            }
-        });
     }
 
     @Override
@@ -515,20 +481,6 @@ public class FragmentPlayerFull extends Fragment {
     }
 
     private void updateRecordButton(boolean playing, boolean recording) {
-        btnRecord.setEnabled(playing);
-
-        if (recording) {
-            btnRecord.setImageResource(R.drawable.ic_stop_recording);
-            btnRecord.setContentDescription(getResources().getString(R.string.detail_stop));
-        } else {
-            btnRecord.setImageResource(R.drawable.ic_start_recording);
-
-            if (!storagePermissionsDenied) {
-                btnRecord.setContentDescription(getResources().getString(R.string.image_button_record));
-            } else {
-                btnRecord.setContentDescription(getResources().getString(R.string.image_button_record_request_permission));
-            }
-        }
     }
 
     private void updateRecordings() {
@@ -617,15 +569,6 @@ public class FragmentPlayerFull extends Fragment {
     }
 
     private void updateFavouriteButton() {
-        DataRadioStation station = Utils.getCurrentOrLastStation(requireContext());
-
-        if (station != null && favouriteManager.has(station.StationUuid)) {
-            btnFavourite.setImageResource(R.drawable.ic_star_24dp);
-            btnFavourite.setContentDescription(requireContext().getApplicationContext().getString(R.string.detail_unstar));
-        } else {
-            btnFavourite.setImageResource(R.drawable.ic_star_border_24dp);
-            btnFavourite.setContentDescription(requireContext().getApplicationContext().getString(R.string.detail_star));
-        }
     }
 
     private class FavouritesObserver implements java.util.Observer {
