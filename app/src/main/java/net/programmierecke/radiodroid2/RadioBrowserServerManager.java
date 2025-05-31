@@ -40,8 +40,12 @@ public class RadioBrowserServerManager {
         }
         if (listResult.size() == 0){
             // should we inform people that their internet provider is not able to do reverse lookups? (= is shit)
-            Log.w("DNS", "Fallback to de1.api.radio-browser.info because dns call did not work.");
+            // wow, very brave statement, considering that the DNS lookup fails frequently for other reasons
+            Log.w("DNS", "Fallback to the predefined list because dns call did not work.");
             listResult.add("de1.api.radio-browser.info");
+            listResult.add("de2.api.radio-browser.info");
+            listResult.add("nl1.api.radio-browser.info");
+            listResult.add("fi1.api.radio-browser.info");
         }
         Log.d("DNS", "doDnsServerListing() Found servers: " + listResult.size());
         return listResult.toArray(new String[0]);
